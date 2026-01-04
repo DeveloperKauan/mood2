@@ -345,11 +345,11 @@ const Dashboard = () => {
   const hasLoggedToday = !!entries[todayKey];
 
   const handleShare = async () => {
-    const text = `Meu Mood Tracker: ${streak} dias seguidos! Hoje estou me sentindo ${hasLoggedToday ? MOODS_CONFIG[entries[todayKey].mood].label : '...'} ✨`;
+    const text = `Meu Variance Tracker: ${streak} dias seguidos! Hoje estou me sentindo ${hasLoggedToday ? MOODS_CONFIG[entries[todayKey].mood].label : '...'} ✨`;
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Meu Mood Tracker',
+          title: 'Stat Of Life',
           text: text,
           url: window.location.href,
         });
@@ -614,7 +614,7 @@ const SettingsPage = () => {
       </Card>
       
       <div className="text-center text-xs text-slate-400 mt-8">
-        Mood Tracker v2.1 • Mobile SaaS
+        Stat Of Life v2.1 • Mobile SaaS
       </div>
     </div>
   );
