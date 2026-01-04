@@ -8,7 +8,8 @@ import {
   X, 
   ChevronLeft, 
   ChevronRight, 
-  Download, 
+  Download,
+  Upload, // Adicionado ícone de Upload
   Moon, 
   Sun,
   TrendingUp,
@@ -33,7 +34,7 @@ const QUOTES_DB = [
   { text: "O homem que remove uma montanha começa carregando pequenas pedras.", author: "Provérbio Chinês" },
   { text: "A vida é 10% o que acontece comigo e 90% de como eu reajo a isso.", author: "Charles Swindoll" },
   { text: "A simplicidade é o último grau de sofisticação.", author: "Leonardo da Vinci" },
-  { text: "O que não nos mata nos torna mais fortes.", author: "Nietzsche" }
+  { text: "O que não nos mata nos torna mais fortes.", author: "Nietzsche" },
   { text: "A disciplina é a ponte entre metas e realizações.", author: "Jim Rohn" },
   { text: "Foco é dizer não para centenas de boas ideias.", author: "Steve Jobs" },
   { text: "Sem autodisciplina, o sucesso é impossível, ponto final.", author: "Lou Holtz" },
@@ -141,13 +142,14 @@ const QUOTES_DB = [
 ];
 
 // src/data/moods.js
+// Adicionei propriedade hex para uso no Canvas (compartilhamento)
 const MOODS_CONFIG = {
-  'A': { score: 5, color: 'bg-emerald-500', text: 'bg-emerald-100', label: 'Incrível', icon: '😄' },
-  'B': { score: 4, color: 'bg-teal-400', text: 'bg-teal-100', label: 'Bom', icon: '🙂' },
-  'C': { score: 3, color: 'bg-blue-400', text: 'bg-blue-100', label: 'Normal', icon: '😐' },
-  'D': { score: 2, color: 'bg-indigo-400', text: 'bg-indigo-100', label: 'Cansado', icon: '😴' },
-  'E': { score: 1, color: 'bg-rose-400', text: 'bg-rose-100', label: 'Mal', icon: '😫' },
-  'F': { score: 0, color: 'bg-slate-400', text: 'bg-slate-100', label: 'Terrível', icon: '💀' },
+  'A': { score: 5, color: 'bg-emerald-500', text: 'bg-emerald-100', label: 'Incrível', icon: '😄', hex: '#10b981' },
+  'B': { score: 4, color: 'bg-teal-400', text: 'bg-teal-100', label: 'Bom', icon: '🙂', hex: '#2dd4bf' },
+  'C': { score: 3, color: 'bg-blue-400', text: 'bg-blue-100', label: 'Normal', icon: '😐', hex: '#60a5fa' },
+  'D': { score: 2, color: 'bg-indigo-400', text: 'bg-indigo-100', label: 'Cansado', icon: '😴', hex: '#818cf8' },
+  'E': { score: 1, color: 'bg-rose-400', text: 'bg-rose-100', label: 'Mal', icon: '😫', hex: '#fb7185' },
+  'F': { score: 0, color: 'bg-slate-400', text: 'bg-slate-100', label: 'Terrível', icon: '💀', hex: '#94a3b8' },
 };
 
 const DEFAULT_TAGS = ["Trabalho", "Família", "Treino", "Estudos", "Lazer", "Sono", "Saúde"];
@@ -206,6 +208,128 @@ const calculateStreak = (entries) => {
     }
   }
   return streak;
+};
+
+// Nova função para calcular estatísticas mensais
+const calculateMonthStats = (entries) => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  
+  let totalScore = 0;
+  let count = 0;
+  
+  // Itera sobre todas as entradas
+  Object.entries(entries).forEach(([key, value]) => {
+    const [entryYear, entryMonth] = key.split('-').map(Number);
+    // getMonth() retorna 0-11, mas a string de data tem o mês real (1-12)
+    if (entryYear === year && entryMonth === (month + 1)) {
+      totalScore += MOODS_CONFIG[value.mood].score;
+      count++;
+    }
+  });
+
+  const average = count === 0 ? 0 : totalScore / count;
+  
+  // Conversão para Nota (Grade)
+  let grade = '-';
+  if (count > 0) {
+    if (average >= 4.5) grade = 'A+';
+    else if (average >= 4.0) grade = 'A';
+    else if (average >= 3.0) grade = 'B';
+    else if (average >= 2.0) grade = 'C';
+    else if (average >= 1.0) grade = 'D';
+    else grade = 'F';
+  }
+
+  return { count, grade, average };
+};
+
+// Nova função para Gerar Imagem do Calendário (Canvas) para Compartilhamento
+const generateShareImage = async (entries, userName) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const width = 800;
+    const height = 800; // Quadrado para ficar bonito no Instagram/Zap
+    canvas.width = width;
+    canvas.height = height;
+
+    // Fundo
+    ctx.fillStyle = '#f8fafc'; // slate-50
+    ctx.fillRect(0, 0, width, height);
+
+    // Título
+    ctx.fillStyle = '#1e293b'; // slate-800
+    ctx.font = 'bold 40px sans-serif';
+    const now = new Date();
+    const title = `Humor de ${now.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}`;
+    ctx.textAlign = 'center';
+    ctx.fillText(title.charAt(0).toUpperCase() + title.slice(1), width / 2, 80);
+    
+    ctx.font = '24px sans-serif';
+    ctx.fillStyle = '#64748b';
+    ctx.fillText(`@${userName}`, width / 2, 120);
+
+    // Grid do Calendário
+    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).getDay(); // 0 = Dom
+
+    const startX = 100;
+    const startY = 200;
+    const cellSize = 80;
+    const gap = 10;
+    const cols = 7;
+
+    // Cabeçalho dias da semana
+    const weekDays = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+    ctx.font = 'bold 20px sans-serif';
+    ctx.fillStyle = '#94a3b8';
+    weekDays.forEach((day, i) => {
+        ctx.fillText(day, startX + (i * (cellSize + gap)) + cellSize/2, startY - 20);
+    });
+
+    // Dias
+    let currentX = startX + (firstDay * (cellSize + gap));
+    let currentY = startY;
+
+    for (let i = 1; i <= daysInMonth; i++) {
+        const d = new Date(now.getFullYear(), now.getMonth(), i);
+        const key = formatDateKey(d);
+        const entry = entries[key];
+        
+        // Desenha quadrado
+        if (entry) {
+            ctx.fillStyle = MOODS_CONFIG[entry.mood].hex;
+        } else {
+            ctx.fillStyle = '#e2e8f0'; // slate-200 (empty)
+        }
+        
+        // Arredondar cantos (simulado simples)
+        ctx.beginPath();
+        ctx.roundRect(startX + ((firstDay + i - 1) % 7) * (cellSize + gap), 
+                      startY + Math.floor((firstDay + i - 1) / 7) * (cellSize + gap), 
+                      cellSize, cellSize, 16);
+        ctx.fill();
+
+        // Número do dia
+        ctx.fillStyle = entry ? '#ffffff' : '#94a3b8';
+        ctx.font = 'bold 24px sans-serif';
+        ctx.fillText(i, 
+            startX + ((firstDay + i - 1) % 7) * (cellSize + gap) + cellSize/2, 
+            startY + Math.floor((firstDay + i - 1) / 7) * (cellSize + gap) + cellSize/2 + 8
+        );
+    }
+
+    // Rodapé
+    ctx.fillStyle = '#10b981'; // emerald-500
+    ctx.font = 'bold 20px sans-serif';
+    ctx.fillText("Gerado por Stats Of Mind", width / 2, height - 40);
+
+    return new Promise(resolve => {
+        canvas.toBlob(blob => {
+            resolve(new File([blob], 'meu-mes.png', { type: 'image/png' }));
+        });
+    });
 };
 
 // src/services/storage.js
@@ -280,8 +404,24 @@ const AppProvider = ({ children }) => {
     downloadAnchorNode.remove();
   };
 
+  // Função Importar Dados
+  const importData = (file) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const importedData = JSON.parse(event.target.result);
+        if (importedData.entries) setEntries(importedData.entries);
+        if (importedData.settings) setSettings(importedData.settings);
+        alert('Dados importados com sucesso!');
+      } catch (e) {
+        alert('Erro ao ler arquivo de backup.');
+      }
+    };
+    reader.readAsText(file);
+  };
+
   return (
-    <AppContext.Provider value={{ entries, addEntry, settings, setSettings, view, setView, exportData }}>
+    <AppContext.Provider value={{ entries, addEntry, settings, setSettings, view, setView, exportData, importData }}>
       {children}
     </AppContext.Provider>
   );
@@ -336,8 +476,6 @@ const Modal = ({ isOpen, onClose, title, children }) => {
 
 const MoodEntryModal = ({ isOpen, onClose, dateKey }) => {
   const { entries, addEntry } = useContext(AppContext);
-  
-  // Safe retrieval of existing entry to avoid useEffect loops
   const existingEntry = entries[dateKey];
   
   const [mood, setMood] = useState(null);
@@ -432,6 +570,8 @@ const Dashboard = () => {
   
   const quote = useMemo(() => getQuote(), []);
   const streak = useMemo(() => calculateStreak(entries), [entries]);
+  const monthStats = useMemo(() => calculateMonthStats(entries), [entries]);
+  const lifeProgress = useMemo(() => calculateLifeWeeks(settings.birthDate), [settings.birthDate]);
   
   const chartData = useMemo(() => {
     const data = [];
@@ -449,22 +589,31 @@ const Dashboard = () => {
   const hasLoggedToday = !!entries[todayKey];
 
   const handleShare = async () => {
-    const text = `Meu Variance Tracker: ${streak} dias seguidos! Hoje estou me sentindo ${hasLoggedToday ? MOODS_CONFIG[entries[todayKey].mood].label : '...'} ✨`;
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'Stat Of Mind',
-          text: text,
-          url: window.location.href,
-        });
-      } catch (err) {
-        console.log('Share canceled');
-      }
-    } else {
-      navigator.clipboard.writeText(text);
-      alert('Texto copiado para a área de transferência!');
+    try {
+        const file = await generateShareImage(entries, settings.userName);
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+                files: [file],
+                title: 'Meu Mês no Stats Of Mind',
+                text: `Estou com nota ${monthStats.grade} este mês!`,
+            });
+        } else {
+            // Fallback para download
+            const url = URL.createObjectURL(file);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `stats-of-mind-${formatDateKey(new Date())}.png`;
+            a.click();
+            URL.revokeObjectURL(url);
+            alert('Imagem gerada e baixada! Compartilhe manualmente.');
+        }
+    } catch (error) {
+        console.error("Erro ao compartilhar", error);
+        alert("Erro ao gerar imagem.");
     }
   };
+
+  const lifePercentage = Math.round((lifeProgress.lived / lifeProgress.total) * 100);
 
   return (
     <div className="space-y-6 pb-24 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -498,7 +647,7 @@ const Dashboard = () => {
       {/* Stats Mini */}
       <div className="grid grid-cols-2 gap-4">
         <Card title="Tendência (7d)">
-           <div className="h-20 w-full -ml-2">
+           <div className="h-20 w-full -ml-2 mb-2">
              <ResponsiveContainer width="100%" height="100%">
                <AreaChart data={chartData}>
                  <defs>
@@ -510,6 +659,22 @@ const Dashboard = () => {
                  <Area type="monotone" dataKey="score" stroke="#10b981" fillOpacity={1} fill="url(#colorScore)" strokeWidth={3} />
                </AreaChart>
              </ResponsiveContainer>
+           </div>
+           
+           {/* Funcionalidade: Nota do Mês e Contagem */}
+           <div className="flex justify-between items-center border-t border-slate-100 dark:border-slate-700 pt-3">
+              <div>
+                  <p className="text-[10px] text-slate-400 uppercase font-bold">Nota do Mês</p>
+                  <p className={`text-2xl font-bold ${monthStats.average >= 3 ? 'text-emerald-500' : 'text-rose-400'}`}>
+                      {monthStats.grade}
+                  </p>
+              </div>
+              <div className="text-right">
+                  <p className="text-[10px] text-slate-400 uppercase font-bold">Registros</p>
+                  <p className="text-lg font-bold text-slate-700 dark:text-slate-300">
+                      {monthStats.count}
+                  </p>
+              </div>
            </div>
         </Card>
         
@@ -527,10 +692,23 @@ const Dashboard = () => {
           </button>
 
           <Button variant="secondary" onClick={handleShare} className="!py-2 !rounded-2xl !text-xs">
-            <Share2 size={14} /> Compartilhar
+            <Share2 size={14} /> Compartilhar Mês
           </Button>
         </div>
       </div>
+
+      {/* Widget Memento Mori Miniatura */}
+      <Card title="Vida Vivida (80 anos)" className="relative overflow-hidden">
+        <div className="flex items-center gap-4">
+            <div className="flex-1 h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div 
+                    className="h-full bg-slate-800 dark:bg-slate-200 transition-all duration-1000 ease-out"
+                    style={{ width: `${lifePercentage}%` }}
+                ></div>
+            </div>
+            <span className="font-bold text-slate-800 dark:text-white text-sm">{lifePercentage}%</span>
+        </div>
+      </Card>
 
       <MoodEntryModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} dateKey={todayKey} />
     </div>
@@ -619,11 +797,6 @@ const MementoPage = () => {
   const { settings } = useContext(AppContext);
   const { lived, total } = useMemo(() => calculateLifeWeeks(settings.birthDate), [settings.birthDate]);
   
-  // Single Screen Logic:
-  // Render a flat grid of 4160 dots (80 years * 52 weeks).
-  // CSS Grid with 52 columns allows rows to stack naturally.
-  // Using small aspect-square dots to fit mobile screens.
-  
   const totalWeeks = 80 * 52;
   const percentage = Math.round((lived / totalWeeks) * 100);
 
@@ -636,14 +809,12 @@ const MementoPage = () => {
         </p>
       </div>
 
-      {/* Optimized Container for Single Screen Fit */}
       <div className="flex-1 min-h-0 bg-white dark:bg-slate-800 rounded-3xl p-3 border border-slate-100 dark:border-slate-700 overflow-hidden flex flex-col items-center justify-center">
         <div 
           className="grid grid-cols-[repeat(52,1fr)] gap-[1px] w-full max-w-[400px] aspect-[52/80]"
           style={{ width: '100%', height: 'auto' }}
         >
           {Array.from({ length: totalWeeks }).map((_, i) => {
-             // Rendering optimization: Only render style, minimal props
              const isLived = i < lived;
              const isCurrent = i === lived;
              return (
@@ -665,10 +836,22 @@ const MementoPage = () => {
 };
 
 const SettingsPage = () => {
-  const { settings, setSettings, exportData } = useContext(AppContext);
+  const { settings, setSettings, exportData, importData } = useContext(AppContext);
+  const fileInputRef = useRef(null);
 
   const handleChange = (field, value) => {
     setSettings(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      importData(file);
+    }
   };
 
   return (
@@ -712,13 +895,27 @@ const SettingsPage = () => {
       </Card>
 
       <Card title="Dados">
-        <Button variant="secondary" onClick={exportData} className="w-full">
-          <Download size={18} /> Exportar Backup JSON
-        </Button>
+        <div className="space-y-3">
+            <Button variant="secondary" onClick={exportData} className="w-full">
+              <Download size={18} /> Exportar Backup JSON
+            </Button>
+            
+            <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleFileChange} 
+                accept=".json" 
+                style={{ display: 'none' }} 
+            />
+            
+            <Button variant="secondary" onClick={handleImportClick} className="w-full">
+              <Upload size={18} /> Importar Backup JSON
+            </Button>
+        </div>
       </Card>
       
       <div className="text-center text-xs text-slate-400 mt-8">
-        Stat Of Mind v2.1 • Kauan SaaS
+        Stat Of Mind v2.2 • Atualizado
       </div>
     </div>
   );
