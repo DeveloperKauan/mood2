@@ -2,9 +2,74 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Estilos globais para garantir que o app ocupe a tela toda */
-body, html, #root {
-  height: 100%;
-  margin: 0;
-  padding: 0;
+/* --- RESET BÁSICO E OBRIGATÓRIO --- */
+/* Isso garante que bordas e preenchimentos não aumentem o tamanho dos elementos */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Garante que o corpo ocupe a altura total e não tenha scroll horizontal */
+html, body {
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden; /* O segredo para travar o scroll lateral */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; /* Fontes padrão de sistema */
+    background-color: #f4f4f4; /* Cor de fundo suave */
+}
+
+/* --- ELEMENTOS RESPONSIVOS --- */
+
+/* Imagens e Vídeos nunca ultrapassarão a largura da tela */
+img, video, iframe, canvas {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* O Container Principal (A caixa que segura seu conteúdo) */
+.container {
+    width: 100%;
+    max-width: 1200px; /* Largura máxima em PC */
+    margin: 0 auto;    /* Centraliza no PC */
+    padding: 20px;     /* Espaço interno para não colar nas bordas do celular */
+}
+
+/* Botões com tamanho tocável (Touch Target) */
+button, .btn {
+    min-height: 48px; /* Padrão mínimo do Google para dedos */
+    min-width: 48px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+/* --- GRID INTELIGENTE (Flexbox) --- */
+/* Use essa classe para colocar coisas lado a lado no PC e empilhado no celular */
+.row {
+    display: flex;
+    flex-wrap: wrap; /* Permite quebrar linha */
+    gap: 20px;       /* Espaço entre itens */
+}
+
+.col {
+    flex: 1;         /* Ocupa espaço igual */
+    min-width: 300px; /* Se a tela for menor que 300px, ele joga o item pra linha de baixo */
+}
+
+/* --- AJUSTES FINAIS PARA CELULAR (Media Query) --- */
+@media (max-width: 768px) {
+    /* Aumenta o texto para leitura fácil sem zoom */
+    body {
+        font-size: 16px; 
+    }
+    
+    .container {
+        padding: 15px; /* Menos borda no celular para aproveitar espaço */
+    }
+    
+    /* Removemos hovers no celular pois não existe mouse */
+    a:hover, button:hover {
+        transform: none; 
+    }
 }
