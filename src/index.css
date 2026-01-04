@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Estilos globais para garantir que o app ocupe a tela toda */
+body, html, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
