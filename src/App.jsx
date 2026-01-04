@@ -9,21 +9,20 @@ import {
   ChevronLeft, 
   ChevronRight, 
   Download,
-  Upload, // Adicionado ícone de Upload
+  Upload, // Novo ícone
   Moon, 
   Sun,
   TrendingUp,
   Award,
-  Share2,
-  Copy
+  Share2
 } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 
 /* ==================================================================================
    1. DATA LAYER (src/data/)
    ================================================================================== */
 
-// src/data/quotes.js
+// Frases Gerais
 const QUOTES_DB = [
   { text: "A felicidade da sua vida depende da qualidade dos seus pensamentos.", author: "Marco Aurélio" },
   { text: "Não estrague o que você tem desejando o que não tem.", author: "Epicuro" },
@@ -34,115 +33,20 @@ const QUOTES_DB = [
   { text: "O homem que remove uma montanha começa carregando pequenas pedras.", author: "Provérbio Chinês" },
   { text: "A vida é 10% o que acontece comigo e 90% de como eu reajo a isso.", author: "Charles Swindoll" },
   { text: "A simplicidade é o último grau de sofisticação.", author: "Leonardo da Vinci" },
-  { text: "O que não nos mata nos torna mais fortes.", author: "Nietzsche" },
-  { text: "A disciplina é a ponte entre metas e realizações.", author: "Jim Rohn" },
-  { text: "Foco é dizer não para centenas de boas ideias.", author: "Steve Jobs" },
-  { text: "Sem autodisciplina, o sucesso é impossível, ponto final.", author: "Lou Holtz" },
-  { text: "A única diferença entre sucesso e fracasso é a capacidade de agir.", author: "Alexander Graham Bell" },
-  { text: "Você nunca vai sempre estar motivado. Você tem que aprender a ser disciplinado.", author: "Desconhecido" },
-  { text: "Foco, disciplina, trabalho árduo e sacrifício. Finalmente, não existe mágica.", author: "Kobe Bryant" },
-  { text: "A força não vem de vitórias. Seus esforços desenvolvem suas forças.", author: "Arnold Schwarzenegger" },
-  { text: "Persistência é o veículo do êxito.", author: "Charles Chaplin" },
-  { text: "Disciplina é lembrar-se do que você quer.", author: "David Campbell" },
-  { text: "Foco é fazer o que é preciso, disciplina é evitar o que não é necessário.", author: "Desconhecido" },
-  { text: "Mantenha o foco em seu objetivo, não olhe em nenhuma outra direção, mas à frente.", author: "Desconhecido" },
-  { text: "A disciplina é a parte mais importante do sucesso.", author: "Truman Capote" },
-  { text: "Não é o que fazemos de vez em quando que molda nossas vidas, mas o que fazemos consistentemente.", author: "Tony Robbins" },
-  { text: "Foco significa estar presente.", author: "Desconhecido" },
-  { text: "Para ter sucesso, sua determinação deve ser maior que sua habilidade de desistir.", author: "Desconhecido" },
-  { text: "A verdadeira liberdade é impossível sem uma mente liberta pela disciplina.", author: "Mortimer J. Adler" },
-  { text: "Foco é escolher conscientemente o que dizer não.", author: "Desconhecido" },
-  { text: "Disciplina é a escolha entre o que você quer agora e o que você quer mais.", author: "Desconhecido" },
-  { text: "A excelência não é um ato, mas um hábito.", author: "Aristóteles" },
-  { text: "Sucesso é a soma de pequenos esforços repetidos dia após dia.", author: "Robert Collier" },
-  { text: "A disciplina é o fogo que molda o aço do caráter.", author: "Desconhecido" },
-  { text: "Foco é a arte de priorizar o essencial acima do urgente.", author: "Desconhecido" },
-  { text: "Disciplina é o combustível que transforma sonhos em realidade.", author: "Desconhecido" },
-  { text: "Você não pode ter sucesso se estiver distraído com o fracasso.", author: "Desconhecido" },
-  { text: "A chave para o sucesso é manter a mente onde seus pés estão.", author: "Desconhecido" },
-  { text: "O progresso só acontece quando você se recusa a desistir.", author: "Desconhecido" },
-  { text: "Foco e disciplina são as asas que te levam ao topo.", author: "Desconhecido" },
-  { text: "Não se distraia com os ruídos do mundo; mantenha sua visão clara.", author: "Desconhecido" },
-  { text: "Disciplina é o diferencial entre a mediocridade e a excelência.", author: "Desconhecido" },
-  { text: "Você cresce a cada vez que escolhe a disciplina sobre a facilidade.", author: "Desconhecido" },
-  { text: "A constância no esforço vence o talento sem dedicação.", author: "Desconhecido" },
-  { text: "Foco é colocar toda sua energia no que realmente importa.", author: "Desconhecido" },
-  { text: "Disciplina é o que transforma intenção em ação.", author: "Desconhecido" },
-  { text: "Não é a motivação que te faz continuar, é a disciplina.", author: "Desconhecido" },
-  { text: "Se você não controla sua mente, alguém ou algo o fará.", author: "Desconhecido" },
-  { text: "O maior teste de disciplina é manter o foco mesmo quando ninguém está olhando.", author: "Desconhecido" },
-  { text: "Foco é a habilidade de ignorar o irrelevante.", author: "Desconhecido" },
-  { text: "Os resultados vêm para aqueles que têm paciência e perseverança.", author: "Desconhecido" },
-  { text: "Disciplina é fazer o que deve ser feito, mesmo quando você não quer.", author: "Desconhecido" },
-  { text: "O sucesso é silencioso; o trabalho duro, nem sempre.", author: "Desconhecido" },
-  { text: "Foco não é sobre mais, é sobre melhor.", author: "Desconhecido" },
-  { text: "Com disciplina, até o impossível parece alcançável.", author: "Desconhecido" },
-  { text: "O futuro é moldado pelas decisões que você faz hoje.", author: "Desconhecido" },
-  { text: "Grandes conquistas exigem grandes doses de disciplina.", author: "Desconhecido" },
-  { text: "Não confunda estar ocupado com estar focado.", author: "Desconhecido" },
-  { text: "Cada pequeno esforço disciplinado constrói uma grande vitória.", author: "Desconhecido" },
-  { text: "Quando você se mantém disciplinado, não há limites para o que pode alcançar.", author: "Desconhecido" },
-  { text: "Foco é a bússola; disciplina é a força que te move.", author: "Desconhecido" },
-  { text: "Os maiores sucessos vêm daqueles que aprendem a se disciplinar.", author: "Desconhecido" },
-  { text: "Quando o foco é claro, as decisões ficam mais fáceis.", author: "Desconhecido" },
-  { text: "Disciplina não é restrição; é liberdade para atingir o extraordinário.", author: "Desconhecido" },
-  { text: "O caminho para a excelência é pavimentado com disciplina diária.", author: "Desconhecido" },
-  { text: "Foco e disciplina são os alicerces de qualquer conquista.", author: "Desconhecido" },
-  { text: "Sem disciplina, até o melhor plano é apenas uma intenção.", author: "Desconhecido" },
-  { text: "Quanto mais você trabalha em si mesmo, mais longe você vai.", author: "Desconhecido" },
-  { text: "É no silêncio da disciplina que o som do sucesso é construído.", author: "Desconhecido" },
-  { text: "Foco é a diferença entre tentar e realizar.", author: "Desconhecido" },
-  { text: "Disciplina é o preço que você paga para viver seus sonhos.", author: "Desconhecido" },
-  { text: "Sucesso não é um evento; é uma rotina construída com disciplina.", author: "Desconhecido" },
-  { text: "Ao dominar a disciplina, você domina o próprio destino.", author: "Desconhecido" },
-  { text: "Foco é o que separa aqueles que sonham daqueles que realizam.", author: "Desconhecido" },
-  { text: "A disciplina diária é o que transforma boas intenções em grandes resultados.", author: "Desconhecido" },
-  { text: "Grandes sonhos exigem uma dose ainda maior de disciplina.", author: "Desconhecido" },
-  { text: "Cada dia de esforço disciplinado é um passo mais próximo do sucesso.", author: "Desconhecido" },
-  { text: "O segredo do sucesso está na consistência e na disciplina.", author: "Desconhecido" },
-  { text: "A determinação te coloca no caminho; a disciplina te mantém nele.", author: "Desconhecido" },
-  { text: "Foco é enxergar o objetivo mesmo no meio do caos.", author: "Desconhecido" },
-  { text: "Disciplina é a arte de escolher seus sacrifícios.", author: "Desconhecido" },
-  { text: "Se você dominar a disciplina, dominará qualquer desafio.", author: "Desconhecido" },
-  { text: "O maior investimento que você pode fazer é na sua própria disciplina.", author: "Desconhecido" },
-  { text: "Você é o que repete todos os dias; seja disciplinado.", author: "Desconhecido" },
-  { text: "A disciplina transforma intenções vagas em ações concretas.", author: "Desconhecido" },
-  { text: "Foco é quando sua energia encontra direção.", author: "Desconhecido" },
-  { text: "A cada escolha disciplinada, você constrói o futuro que deseja.", author: "Desconhecido" },
-  { text: "Disciplina é a prova de que você acredita no seu potencial.", author: "Desconhecido" },
-  { text: "Quem não tem disciplina para começar, nunca chegará ao fim.", author: "Desconhecido" },
-  { text: "Foco é a lâmpada; disciplina é a energia que a mantém acesa.", author: "Desconhecido" },
-  { text: "Os frutos mais doces vêm dos esforços mais disciplinados.", author: "Desconhecido" },
-  { text: "Disciplina não é sobre perfeição, é sobre consistência.", author: "Desconhecido" },
-  { text: "A chave do progresso é manter o foco no que importa.", author: "Desconhecido" },
-  { text: "Sem disciplina, o talento é apenas potencial desperdiçado.", author: "Desconhecido" },
-  { text: "O sucesso é o destino, mas a disciplina é o motor que te leva até lá.", author: "Desconhecido" },
-  { text: "Não espere por motivação; ela é passageira. A disciplina é constante.", author: "Desconhecido" },
-  { text: "Com disciplina, cada pequeno passo se torna uma vitória.", author: "Desconhecido" },
-  { text: "Foco é o superpoder de quem deseja conquistar grandes coisas.", author: "Desconhecido" },
-  { text: "Disciplina é escolher o que você quer mais em vez do que você quer agora.", author: "Desconhecido" },
-  { text: "Quem vive distraído jamais alcança seus maiores objetivos.", author: "Desconhecido" },
-  { text: "Disciplina é a linguagem dos que transformam sonhos em realidade.", author: "Desconhecido" },
-  { text: "Foco é saber para onde ir; disciplina é nunca parar.", author: "Desconhecido" },
-  { text: "Você é o arquiteto da sua vida; a disciplina é sua melhor ferramenta.", author: "Desconhecido" },
-  { text: "A paciência só é útil quando acompanhada da disciplina.", author: "Desconhecido" },
-  { text: "A cada escolha focada, você escreve uma nova página da sua história.", author: "Desconhecido" },
-  { text: "Disciplina é o compromisso com sua própria evolução.", author: "Desconhecido" },
-  { text: "Foco transforma obstáculos em degraus para o sucesso.", author: "Desconhecido" },
-  { text: "Sem disciplina, até as melhores oportunidades passam despercebidas.", author: "Desconhecido" },
-  { text: "Os melhores resultados nascem do trabalho disciplinado e constante.", author: "Desconhecido" },
-  { text: "Foco e disciplina são como músculos: quanto mais você os treina, mais fortes eles ficam.", author: "Desconhecido" },
-  { text: "Disciplina não é um castigo; é um presente que você se dá.", author: "Desconhecido" },
-  { text: "Se você não está disposto a ser disciplinado, esteja preparado para desistir dos seus sonhos.", author: "Desconhecido" },
-  { text: "Tudo posso naquele que me fortalece.", author: "Filipenses 4:13" },
-  { text: "Sê forte e corajoso; não temas, nem te espantes.", author: "Josué 1:9" },
-  { text: "O Senhor é a minha força e o meu escudo.", author: "Salmos 28:7" },
-  { text: "Pois Deus não nos deu espírito de covardia, mas de poder, de amor e de equilíbrio.", author: "2 Timóteo 1:7" },
-  { text: "Confia no Senhor de todo o teu coração e não te estribes no teu próprio entendimento.", author: "Provérbios 3:5" }
+  { text: "O que não nos mata nos torna mais fortes.", author: "Nietzsche" }
 ];
 
-// src/data/moods.js
-// Adicionei propriedade hex para uso no Canvas (compartilhamento)
+// Frases Estoicas para o Memento Mori
+const STOIC_QUOTES = [
+  { text: "Você poderia deixar a vida agora mesmo. Deixe que isso determine o que você faz, diz e pensa.", author: "Marco Aurélio" },
+  { text: "Não é que tenhamos pouco tempo, mas desperdiçamos muito.", author: "Sêneca" },
+  { text: "Sofremos mais na imaginação do que na realidade.", author: "Sêneca" },
+  { text: "A morte sorri para todos nós; tudo o que um homem pode fazer é sorrir de volta.", author: "Marco Aurélio" },
+  { text: "Nenhum homem é livre se não for mestre de si mesmo.", author: "Epicteto" },
+  { text: "Lembre-se de que você vai morrer. Isso não é um convite ao desespero, mas à vida.", author: "Estoicismo" }
+];
+
+// Configuração de Humores (Adicionado HEX para o Canvas)
 const MOODS_CONFIG = {
   'A': { score: 5, color: 'bg-emerald-500', text: 'bg-emerald-100', label: 'Incrível', icon: '😄', hex: '#10b981' },
   'B': { score: 4, color: 'bg-teal-400', text: 'bg-teal-100', label: 'Bom', icon: '🙂', hex: '#2dd4bf' },
@@ -158,16 +62,15 @@ const DEFAULT_TAGS = ["Trabalho", "Família", "Treino", "Estudos", "Lazer", "Son
    2. SERVICE LAYER (src/services/)
    ================================================================================== */
 
-// src/services/dateUtils.js
 const getSeedFromDate = () => {
   const today = new Date();
   return today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
 };
 
-const getQuote = () => {
+const getQuote = (db = QUOTES_DB) => {
   const seed = getSeedFromDate();
-  const index = seed % QUOTES_DB.length;
-  return QUOTES_DB[index];
+  const index = seed % db.length;
+  return db[index];
 };
 
 const formatDateKey = (date) => {
@@ -180,7 +83,6 @@ const calculateLifeWeeks = (birthDateString, maxYears = 80) => {
   const birth = new Date(birthDateString);
   const now = new Date();
   const diffTime = Math.abs(now - birth);
-  // Using simplified week calculation
   const diffWeeks = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 7)); 
   
   return {
@@ -201,7 +103,6 @@ const calculateStreak = (entries) => {
     if (entries[key]) {
       streak++;
     } else if (i === 0) {
-      // If today isn't logged yet, check yesterday before breaking
       continue;
     } else {
       break;
@@ -210,56 +111,61 @@ const calculateStreak = (entries) => {
   return streak;
 };
 
-// Nova função para calcular estatísticas mensais
+// Calcula estatísticas do mês atual (Nota e Contagem)
 const calculateMonthStats = (entries) => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth(); // 0-11
+    
+    let totalScore = 0;
+    let count = 0;
+    
+    Object.entries(entries).forEach(([key, value]) => {
+      const [entryYear, entryMonth] = key.split('-').map(Number);
+      // Ajuste: key month é 1-12, js month é 0-11
+      if (entryYear === year && entryMonth === (month + 1)) {
+        totalScore += MOODS_CONFIG[value.mood].score;
+        count++;
+      }
+    });
   
-  let totalScore = 0;
-  let count = 0;
-  
-  // Itera sobre todas as entradas
-  Object.entries(entries).forEach(([key, value]) => {
-    const [entryYear, entryMonth] = key.split('-').map(Number);
-    // getMonth() retorna 0-11, mas a string de data tem o mês real (1-12)
-    if (entryYear === year && entryMonth === (month + 1)) {
-      totalScore += MOODS_CONFIG[value.mood].score;
-      count++;
+    const average = count === 0 ? 0 : totalScore / count;
+    
+    // Converter média para Nota
+    let grade = '-';
+    if (count > 0) {
+      if (average >= 4.5) grade = 'A+';
+      else if (average >= 4.0) grade = 'A';
+      else if (average >= 3.0) grade = 'B';
+      else if (average >= 2.0) grade = 'C';
+      else if (average >= 1.0) grade = 'D';
+      else grade = 'F';
     }
-  });
-
-  const average = count === 0 ? 0 : totalScore / count;
   
-  // Conversão para Nota (Grade)
-  let grade = '-';
-  if (count > 0) {
-    if (average >= 4.5) grade = 'A+';
-    else if (average >= 4.0) grade = 'A';
-    else if (average >= 3.0) grade = 'B';
-    else if (average >= 2.0) grade = 'C';
-    else if (average >= 1.0) grade = 'D';
-    else grade = 'F';
-  }
-
-  return { count, grade, average };
+    return { count, grade, average };
 };
 
-// Nova função para Gerar Imagem do Calendário (Canvas) para Compartilhamento
-const generateShareImage = async (entries, userName) => {
+// Geração de Imagem com Tema e Legenda
+const generateShareImage = async (entries, userName, isDark) => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const width = 800;
-    const height = 800; // Quadrado para ficar bonito no Instagram/Zap
+    const height = 1000; // Mais alto para caber a legenda
     canvas.width = width;
     canvas.height = height;
 
+    // Cores baseadas no tema
+    const bgColor = isDark ? '#0f172a' : '#f8fafc'; // slate-900 vs slate-50
+    const textColor = isDark ? '#ffffff' : '#1e293b'; // white vs slate-800
+    const subTextColor = isDark ? '#94a3b8' : '#64748b'; // slate-400 vs slate-500
+    const emptyCellColor = isDark ? '#1e293b' : '#e2e8f0'; // slate-800 vs slate-200
+
     // Fundo
-    ctx.fillStyle = '#f8fafc'; // slate-50
+    ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, width, height);
 
     // Título
-    ctx.fillStyle = '#1e293b'; // slate-800
+    ctx.fillStyle = textColor;
     ctx.font = 'bold 40px sans-serif';
     const now = new Date();
     const title = `Humor de ${now.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}`;
@@ -267,7 +173,7 @@ const generateShareImage = async (entries, userName) => {
     ctx.fillText(title.charAt(0).toUpperCase() + title.slice(1), width / 2, 80);
     
     ctx.font = '24px sans-serif';
-    ctx.fillStyle = '#64748b';
+    ctx.fillStyle = subTextColor;
     ctx.fillText(`@${userName}`, width / 2, 120);
 
     // Grid do Calendário
@@ -278,51 +184,78 @@ const generateShareImage = async (entries, userName) => {
     const startY = 200;
     const cellSize = 80;
     const gap = 10;
-    const cols = 7;
-
-    // Cabeçalho dias da semana
+    
+    // Cabeçalho dias
     const weekDays = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
     ctx.font = 'bold 20px sans-serif';
-    ctx.fillStyle = '#94a3b8';
+    ctx.fillStyle = subTextColor;
     weekDays.forEach((day, i) => {
         ctx.fillText(day, startX + (i * (cellSize + gap)) + cellSize/2, startY - 20);
     });
 
     // Dias
-    let currentX = startX + (firstDay * (cellSize + gap));
-    let currentY = startY;
-
     for (let i = 1; i <= daysInMonth; i++) {
         const d = new Date(now.getFullYear(), now.getMonth(), i);
         const key = formatDateKey(d);
         const entry = entries[key];
         
-        // Desenha quadrado
-        if (entry) {
-            ctx.fillStyle = MOODS_CONFIG[entry.mood].hex;
-        } else {
-            ctx.fillStyle = '#e2e8f0'; // slate-200 (empty)
-        }
+        const col = (firstDay + i - 1) % 7;
+        const row = Math.floor((firstDay + i - 1) / 7);
+        const x = startX + (col * (cellSize + gap));
+        const y = startY + (row * (cellSize + gap));
+
+        // Cor do dia
+        ctx.fillStyle = entry ? MOODS_CONFIG[entry.mood].hex : emptyCellColor;
         
-        // Arredondar cantos (simulado simples)
+        // Desenha quadrado arredondado
         ctx.beginPath();
-        ctx.roundRect(startX + ((firstDay + i - 1) % 7) * (cellSize + gap), 
-                      startY + Math.floor((firstDay + i - 1) / 7) * (cellSize + gap), 
-                      cellSize, cellSize, 16);
+        ctx.roundRect(x, y, cellSize, cellSize, 16);
         ctx.fill();
 
         // Número do dia
-        ctx.fillStyle = entry ? '#ffffff' : '#94a3b8';
+        ctx.fillStyle = entry ? '#ffffff' : subTextColor;
         ctx.font = 'bold 24px sans-serif';
-        ctx.fillText(i, 
-            startX + ((firstDay + i - 1) % 7) * (cellSize + gap) + cellSize/2, 
-            startY + Math.floor((firstDay + i - 1) / 7) * (cellSize + gap) + cellSize/2 + 8
-        );
+        ctx.fillText(i, x + cellSize/2, y + cellSize/2 + 8);
     }
+
+    // LEGENDA (Parte nova)
+    const legendStartY = 800; // Posição Y da legenda
+    ctx.textAlign = 'left';
+    
+    // Título da Legenda
+    ctx.fillStyle = textColor;
+    ctx.font = 'bold 20px sans-serif';
+    ctx.fillText("Legenda:", startX, legendStartY);
+
+    let legendX = startX;
+    let legendY = legendStartY + 40;
+    const legendGap = 110;
+
+    // Desenhar itens da legenda
+    Object.entries(MOODS_CONFIG).forEach(([key, config]) => {
+        // Bolinha da cor
+        ctx.fillStyle = config.hex;
+        ctx.beginPath();
+        ctx.arc(legendX + 15, legendY, 15, 0, 2 * Math.PI);
+        ctx.fill();
+
+        // Texto
+        ctx.fillStyle = subTextColor;
+        ctx.font = '16px sans-serif';
+        ctx.fillText(config.label, legendX + 40, legendY + 5);
+
+        legendX += legendGap;
+        // Quebra de linha se necessário (opcional para telas pequenas, mas canvas é fixo)
+        if (legendX > width - 100) {
+            legendX = startX;
+            legendY += 50;
+        }
+    });
 
     // Rodapé
     ctx.fillStyle = '#10b981'; // emerald-500
     ctx.font = 'bold 20px sans-serif';
+    ctx.textAlign = 'center';
     ctx.fillText("Gerado por Stats Of Mind", width / 2, height - 40);
 
     return new Promise(resolve => {
@@ -404,7 +337,7 @@ const AppProvider = ({ children }) => {
     downloadAnchorNode.remove();
   };
 
-  // Função Importar Dados
+  // Função para Importar Dados
   const importData = (file) => {
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -414,7 +347,7 @@ const AppProvider = ({ children }) => {
         if (importedData.settings) setSettings(importedData.settings);
         alert('Dados importados com sucesso!');
       } catch (e) {
-        alert('Erro ao ler arquivo de backup.');
+        alert('Erro ao ler arquivo de backup. Certifique-se que é um JSON válido.');
       }
     };
     reader.readAsText(file);
@@ -564,7 +497,7 @@ const MoodEntryModal = ({ isOpen, onClose, dateKey }) => {
    ================================================================================== */
 
 const Dashboard = () => {
-  const { entries, settings } = useContext(AppContext);
+  const { entries, settings, setView } = useContext(AppContext); // Adicionado setView
   const [isModalOpen, setIsModalOpen] = useState(false);
   const todayKey = formatDateKey(new Date());
   
@@ -572,7 +505,7 @@ const Dashboard = () => {
   const streak = useMemo(() => calculateStreak(entries), [entries]);
   const monthStats = useMemo(() => calculateMonthStats(entries), [entries]);
   const lifeProgress = useMemo(() => calculateLifeWeeks(settings.birthDate), [settings.birthDate]);
-  
+
   const chartData = useMemo(() => {
     const data = [];
     const today = new Date();
@@ -587,33 +520,32 @@ const Dashboard = () => {
   }, [entries]);
 
   const hasLoggedToday = !!entries[todayKey];
+  const lifePercentage = Math.round((lifeProgress.lived / lifeProgress.total) * 100);
 
   const handleShare = async () => {
     try {
-        const file = await generateShareImage(entries, settings.userName);
+        const isDark = settings.theme === 'dark';
+        const file = await generateShareImage(entries, settings.userName, isDark);
+        
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
             await navigator.share({
                 files: [file],
                 title: 'Meu Mês no Stats Of Mind',
-                text: `Estou com nota ${monthStats.grade} este mês!`,
+                text: `Meu resumo do mês! Nota: ${monthStats.grade}`,
             });
         } else {
-            // Fallback para download
             const url = URL.createObjectURL(file);
             const a = document.createElement('a');
             a.href = url;
             a.download = `stats-of-mind-${formatDateKey(new Date())}.png`;
             a.click();
             URL.revokeObjectURL(url);
-            alert('Imagem gerada e baixada! Compartilhe manualmente.');
         }
     } catch (error) {
         console.error("Erro ao compartilhar", error);
         alert("Erro ao gerar imagem.");
     }
   };
-
-  const lifePercentage = Math.round((lifeProgress.lived / lifeProgress.total) * 100);
 
   return (
     <div className="space-y-6 pb-24 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -661,10 +593,10 @@ const Dashboard = () => {
              </ResponsiveContainer>
            </div>
            
-           {/* Funcionalidade: Nota do Mês e Contagem */}
+           {/* Nova Seção: Nota do Mês e Contagem */}
            <div className="flex justify-between items-center border-t border-slate-100 dark:border-slate-700 pt-3">
               <div>
-                  <p className="text-[10px] text-slate-400 uppercase font-bold">Nota do Mês</p>
+                  <p className="text-[10px] text-slate-400 uppercase font-bold">Nota Mês</p>
                   <p className={`text-2xl font-bold ${monthStats.average >= 3 ? 'text-emerald-500' : 'text-rose-400'}`}>
                       {monthStats.grade}
                   </p>
@@ -692,23 +624,25 @@ const Dashboard = () => {
           </button>
 
           <Button variant="secondary" onClick={handleShare} className="!py-2 !rounded-2xl !text-xs">
-            <Share2 size={14} /> Compartilhar Mês
+            <Share2 size={14} /> Compartilhar Imagem
           </Button>
         </div>
       </div>
 
-      {/* Widget Memento Mori Miniatura */}
-      <Card title="Vida Vivida (80 anos)" className="relative overflow-hidden">
-        <div className="flex items-center gap-4">
-            <div className="flex-1 h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                <div 
-                    className="h-full bg-slate-800 dark:bg-slate-200 transition-all duration-1000 ease-out"
-                    style={{ width: `${lifePercentage}%` }}
-                ></div>
+      {/* Widget Memento Mori (Clicável) */}
+      <div onClick={() => setView('memento')} className="cursor-pointer">
+        <Card title="Vida Vivida (Toque para ver)" className="relative overflow-hidden hover:border-emerald-500 transition-colors group">
+            <div className="flex items-center gap-4">
+                <div className="flex-1 h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div 
+                        className="h-full bg-slate-800 dark:bg-slate-200 transition-all duration-1000 ease-out group-hover:bg-emerald-500"
+                        style={{ width: `${lifePercentage}%` }}
+                    ></div>
+                </div>
+                <span className="font-bold text-slate-800 dark:text-white text-sm">{lifePercentage}%</span>
             </div>
-            <span className="font-bold text-slate-800 dark:text-white text-sm">{lifePercentage}%</span>
-        </div>
-      </Card>
+        </Card>
+      </div>
 
       <MoodEntryModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} dateKey={todayKey} />
     </div>
@@ -797,16 +731,24 @@ const MementoPage = () => {
   const { settings } = useContext(AppContext);
   const { lived, total } = useMemo(() => calculateLifeWeeks(settings.birthDate), [settings.birthDate]);
   
+  // Frase Estoica Aleatória
+  const stoicQuote = useMemo(() => getQuote(STOIC_QUOTES), []);
+
   const totalWeeks = 80 * 52;
   const percentage = Math.round((lived / totalWeeks) * 100);
 
   return (
     <div className="pb-24 space-y-4 h-full flex flex-col">
+      {/* Frase Estoica Adicionada */}
       <div className="bg-slate-900 text-white p-6 rounded-3xl shrink-0">
         <h2 className="text-2xl font-bold mb-2">Memento Mori</h2>
-        <p className="text-slate-400 text-sm">
+        <p className="text-slate-400 text-sm mb-4">
           <span className="text-emerald-400 font-bold">{percentage}%</span> da vida estimada vivida.
         </p>
+        <div className="pt-4 border-t border-slate-700">
+            <p className="text-xs italic text-slate-300">"{stoicQuote.text}"</p>
+            <p className="text-[10px] text-slate-500 mt-1 uppercase">— {stoicQuote.author}</p>
+        </div>
       </div>
 
       <div className="flex-1 min-h-0 bg-white dark:bg-slate-800 rounded-3xl p-3 border border-slate-100 dark:border-slate-700 overflow-hidden flex flex-col items-center justify-center">
@@ -900,6 +842,7 @@ const SettingsPage = () => {
               <Download size={18} /> Exportar Backup JSON
             </Button>
             
+            {/* Input Invisível para Importação */}
             <input 
                 type="file" 
                 ref={fileInputRef} 
@@ -915,7 +858,7 @@ const SettingsPage = () => {
       </Card>
       
       <div className="text-center text-xs text-slate-400 mt-8">
-        Stat Of Mind v2.2 • Atualizado
+        Stat Of Mind v2.3 • Atualizado
       </div>
     </div>
   );
