@@ -577,7 +577,7 @@ const SettingsPage = () => {
              <span className="text-slate-700 dark:text-slate-300 font-medium">Modo Escuro</span>
              <button 
                onClick={() => handleChange('theme', settings.theme === 'dark' ? 'light' : 'dark')}
-               className="p-2 bg-slate-100 dark:bg-slate-700 rounded-full text-slate-600 dark:text-slate-200"
+               className="p-2 bg-slate-100 dark:bg-slate-700 rounded-full text-slate-600 dark:text-slate-200 flex justify-center items-center"
              >
                {settings.theme === 'dark' ? <Moon size={20}/> : <Sun size={20}/>}
              </button>
