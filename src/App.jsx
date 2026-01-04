@@ -349,7 +349,7 @@ const Dashboard = () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Stat Of Life',
+          title: 'Stat Of Mind',
           text: text,
           url: window.location.href,
         });
@@ -614,7 +614,7 @@ const SettingsPage = () => {
       </Card>
       
       <div className="text-center text-xs text-slate-400 mt-8">
-        Stat Of Life v2.1 • Mobile SaaS
+        Stat Of Mind v2.1 • Kauan SaaS
       </div>
     </div>
   );
